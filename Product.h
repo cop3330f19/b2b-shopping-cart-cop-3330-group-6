@@ -1,3 +1,10 @@
+/*
+File Name: B2BDriver.cpp
+Group Number: 6
+Members: Michael Parrish, Janei Elliston, Racaria Burgess, Michael Mondelice
+Recent Edit Date: 2/26/2020
+*/
+
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
