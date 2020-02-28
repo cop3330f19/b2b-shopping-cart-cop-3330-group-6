@@ -1,3 +1,15 @@
+/*
+B2BDriver.cpp
+Group Number: 6
+RaCaria Burgess, Michael Parrish, Janei Elliston, Michael Mondelice
+2/27/20
+The purpose of this Driver file is to incorporate the three class files together. As the associate enters the items (using the item number) and quantities, 
+the system should verify that the customer still has available credit and the stock has not be depleted. The system should also verify that the a
+ssociate is entering accurate information. 
+Once completed, the system will display a final order summary and update the stock of the items sold.
+ */
+
+
 #include <ctime>
 #include <sstream>
 #include <iostream> 
@@ -9,25 +21,41 @@
 #include <string>
 #include <sstream>
 #include "Product.h"
-#include "Address.h"
 #include "Customer.h"
 #include "StringHelper.h"
 
 using namespace std;
 
-//OBJECTS
-Customer custId[fileCount];
-Address addressId[fileCount];
-Product prodId[fileCount];
-
-//GLOBAL VARIABLES
+//ALLOWS PROGRAM TO BE ABLE TO COUNT LINES IN THE FILES 
+int countFileLines(string holder)
+{
+    int count;
+    string cust;
+    
+    fstream inFile;
+    inFile.open(holder);
+       while (getline(inFile, cust)); //creates a count of items to create pointer array
+        count++;
+    
+        return count;
+    inFile.close();
+    
+    }
 //INCREASE FILE COMPACITY AS IT GROWS
-int fileCount;
+const int fileCount = countFileLines("customer.dat");
+//GLOBAL VARIABLES
+
 //ADDRESS
-string addy, cust _streetAddress, _state, _zipCode, _addy;
+string addy, cust, _streetAddress, _state, _zipCode, _addy, _city;
 //CUSTOMER
 string CName, CNum;
 double CreditL;
+
+//OBJECTS
+Customer custId[100];
+Address addressId[100];
+Product prodId[100];
+
 
 //MIRROR ADDRESS CLASS VECTOR 
 vector<int> mAddress;
@@ -43,26 +71,13 @@ string generateOrderNum(){ //orderSummary << generateOrderNum();
     strstream >> oNum;
     return oNum;
 }
- //ALLOWS PROGRAM TO BE ABLE TO COUNT LINES IN THE FILES 
-int countFileLines(string holder)
-{
-    int count;
-   
-    fstream inFile;
-    infile.open(holder)
-       while (getline(inFile, cust))  //creates a count of items to create pointer array
-        count++;
-    return count;
-    
-    infile.close();
-    }
 
 //ASSIGNS CUSTOMER ADDRESS DEPENDING ON THE INDEX 
 void AddressVectorAssign(){
    for(int x=0; x < mAddress.size(); x++){
        vector<Address>::iterator addA= addVec.begin();
        advance(addA, mAddress[x]);
-       custId[i].setCusAddress(&(*addA));
+       custId[x].setCusAddress(&(*addA));
    }
 }
 
@@ -80,22 +95,32 @@ int AddAddress(string _streetAddress, string _city, string _state, string _zipCo
     return addVec.size()-1;
 }
 
+
 void getCustumerInfo(int count, string f){
     //COLLECTS INFO AND PARSES IT
     fstream infile;
     infile.open(f);
     
+    vector<string> cust;
+    vector<string> addr;
+    string temp;
+    
     for(int x=0; x< count; x++ ){
-        getline(infile, cust);
+        getline(infile, temp);
+        cout << temp << endl;
+        cust = StringHelper::parse(temp, '|');
+        cout << cust[0] << endl;
+        CNum=  cust[0];
+        CName= cust[1];
+        CreditL = stod(cust[2]);
+        _addy= cust[3];
         
-        CNum=  StringHelper::parse(cust,'|')[0];
-        CName= StringHelper::parse(cust,'|')[1];
-        CreditL=stod(StringHelper::parse(cust,'|')[2]);
-        _addy= StringHelper::parse(cust,'|')[3];
-        _streetAddress= StringHelper::parse(addy,',')[0];
-        _city= StringHelper::parse(addy,',')[1];
-        _state= StringHelper::parse(addy,',')[2];
-        _zipCode= StringHelper::parse(addy,',')[3];
+         addr = StringHelper::parse(_addy, ',');
+        
+        _streetAddress= addr[0];
+        _city= addr[1];
+        _state= addr[2];
+        _zipCode= addr[3];
         
         custId[x].setcusName(CName);
         custId[x].setcusNum(CNum);
@@ -104,62 +129,61 @@ void getCustumerInfo(int count, string f){
         addressId[x].setState(_state);
         addressId[x].setZipCode(_zipCode);
         
-        mAddress.push_back(AddAddress(_streetAddress, _city, _state, _zipCode));
-        AddressVectorAssign();
-        
-    }
-    
+         mAddress.push_back(AddAddress(_streetAddress, _city, _state, _zipCode));
+         AddressVectorAssign();
+        break;
+   }  
 }
 
-getCustInfo(int id)
+int findCustInfo(int id)
 {
    for(int i=0; i < fileCount; i++)
    {
-       if(custId[x].getcusNum(CNum) == id)
+       if(custId[i].getcusNum() == std::to_string(id))
        {
           return i;
        }
        return -1;
-            
-          
-    
+   }
 }
 
 
 
 int main(){
+    cout << "Start" << endl;
     int custIndex;
     string associate;
     int cID;
     //OPENS UP ORDER SUMMARY
     ofstream orderSummary;
     orderSummary.open("orderSummary.dat"); 
-    int filecount = countFileLines("customer.dat")
-        
-    getCustumerInfo(fileCount,"customer.dat")
+   
+    cout << "Test 1" << endl;    
+    getCustumerInfo(custId,"customers.dat");
+    // cout << "Test 2" << endl;
     orderSummary <<"Order Number: " << generateOrderNum()<<endl;
+    cout << "Test 3" << endl;
     string NumOrder= generateOrderNum();
- do{
+    
+    
+
     cout <<"Enter Associate's Name: "<<endl;
     cin >>associate;
     
     
     //CORPERATE NUM VALIDATION
-   
- 
-  
+   cout << "Test 4" << endl;    
+ do{
     cout <<"Enter Customer ID:" <<endl;
       cin  >> cID;
-      custIndex = getCustInfo(cid);
-            }
-    
+      custIndex = findCustInfo(cID);
 if(custIndex == -1){
     cout << "Invalid Customer Id Number" << endl;
 }
-else
+//else
 {
-    custId[custIndex].getcusName()
-}
+    cout << custId[custIndex].getStreetAddress() << endl;
+    
 //     int iNum, iQTY,count = 0, iNumChoice, j, itmcount;
 //     double iPrice,total=0;
 //     string iDescrip, holder1;
@@ -257,7 +281,7 @@ else
 //     cout <<left << "B2B Shopping Cart" << endl;   
 //     cout <<"-------------------------------------------------------------------------" << endl; 
 //     cout <<left <<"Order Number: " << NumOrder <<endl;
-//     cout <<left <<"Associate: " << <<endl;
+//     cout <<left <<"Associate: " << associate <<endl;
 //     cout <<left <<"Customer Number: "<< custId[custIndex].getcusNum()<<endl;
 //     cout <<left <<"Address: "<< custId <<endl;
  
@@ -290,5 +314,6 @@ else
 //     cout <<left << "Total" << setw() << "$" << total << endl;
 //     cout <<"-------------------------------------------------------------------------" << endl; 
 //     cout <<left << "Remaning Credit" << setw() << endl;*/
- 	return 0;
+ }while(custIndex == -1); 	
+    return 0;
 }
