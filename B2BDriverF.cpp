@@ -10,7 +10,6 @@ Once completed, the system will display a final order summary and update the sto
  */
 
 
-#include <ctime>
 #include <sstream>
 #include <iostream> 
 #include <cstdlib>
@@ -107,9 +106,9 @@ void getCustumerInfo(int count, string f){
     
     for(int x=0; x< count; x++ ){
         getline(infile, temp);
-        cout << temp << endl;
+        //cout << temp << endl;
         cust = StringHelper::parse(temp, '|');
-        cout << cust[0] << endl;
+        //cout << cust[0] << endl;
         CNum=  cust[0];
         CName= cust[1];
         CreditL = stod(cust[2]);
@@ -135,11 +134,11 @@ void getCustumerInfo(int count, string f){
    }  
 }
 
-int findCustInfo(int id)
+int findCustInfo(string id)
 {
    for(int i=0; i < fileCount; i++)
    {
-       if(custId[i].getcusNum() == std::to_string(id))
+       if(custId[i].getcusNum() == id)
        {
           return i;
        }
@@ -153,13 +152,19 @@ int main(){
     cout << "Start" << endl;
     int custIndex;
     string associate;
-    int cID;
+    string cID;
+    double total;
+    int counts= fileCount;
+  
+    getCustumerInfo(counts, "customers.dat");
+
     //OPENS UP ORDER SUMMARY
     ofstream orderSummary;
     orderSummary.open("orderSummary.dat"); 
    
+    
     cout << "Test 1" << endl;    
-    getCustumerInfo(custId,"customers.dat");
+    
     // cout << "Test 2" << endl;
     orderSummary <<"Order Number: " << generateOrderNum()<<endl;
     cout << "Test 3" << endl;
@@ -172,148 +177,164 @@ int main(){
     
     
     //CORPERATE NUM VALIDATION
-   cout << "Test 4" << endl;    
- do{
+    cout << "Test 4" << endl;    
+
     cout <<"Enter Customer ID:" <<endl;
       cin  >> cID;
       custIndex = findCustInfo(cID);
-if(custIndex == -1){
-    cout << "Invalid Customer Id Number" << endl;
-}
-//else
-{
-    cout << custId[custIndex].getStreetAddress() << endl;
+   
+    if(custIndex == -1){
+        cout << "Invalid Customer Id Number" << endl;
+    }
+    else
+    {
+        orderSummary << "Customer Number:" << (*(custId+findCustInfo(cID))).getcusNum() << endl;
+        orderSummary << "Customer: " << (*(custId+findCustInfo(cID))).getcusName() << endl;
+    }
+  
+     int iNum, iQTY,count = 0, iNumChoice, j, itmcount;
+     double iPrice;
+     string iDescrip, holder1;
+     fstream invFile("inventory.dat");
     
-//     int iNum, iQTY,count = 0, iNumChoice, j, itmcount;
-//     double iPrice,total=0;
-//     string iDescrip, holder1;
-//     fstream invFile("inventory.dat");
+     while (getline(invFile, holder1)) { //creates a count of items to create pointer array
+        count++;
+     }
     
-//     while (getline(invFile, holder1)) { //creates a count of items to create pointer array
-//         count++;
-//     }
+     invFile.close();
+     invFile.clear();
+     invFile.open("inventory.dat");
     
-//     invFile.close();
-//     invFile.clear();
-//     invFile.open("inventory.dat");
+     Product *productInfo = new Product[count];  
     
-//     Product *productInfo = new Product[count];  
-    
-//     j=0;
-//     itmcount = 1;
-//     while(getline(invFile,holder1)){ //pulls string from file
-//         stringstream hold(holder1); //turns string into stream to allow parse
-//     while(getline(hold,holder1,',')){ //parses stringstream
+     j=0;
+    itmcount = 1;
+    while(getline(invFile,holder1)){ //pulls string from file
+        stringstream hold(holder1); //turns string into stream to allow parse
+    while(getline(hold,holder1,',')){ //parses stringstream
         
-//         if (itmcount==4){
-//             iQTY=atoi(holder1.c_str());
-//             (*(productInfo+j)).setStockQuantity(iQTY);
-//             itmcount = 1;
-//             j++;
-//         }
+        if (itmcount==4){
+            iQTY=atoi(holder1.c_str());
+            (*(productInfo+j)).setStockQuantity(iQTY);
+            itmcount = 1;
+            j++;
+         }
         
-//         else if (itmcount==3){
-//             iPrice=atof(holder1.c_str());
-//             (*(productInfo+j)).setPrice(iPrice);
-//             itmcount = 4;
-//         }
+         else if (itmcount==3){
+            iPrice=atof(holder1.c_str());
+             (*(productInfo+j)).setPrice(iPrice);
+             itmcount = 4;
+        }
         
-//         else if (itmcount==2){
-//             iDescrip=holder1;
-//             (*(productInfo+j)).setDescription(iDescrip);
-//             itmcount = 3;
-//         }
+        else if (itmcount==2){
+            iDescrip=holder1;
+             (*(productInfo+j)).setDescription(iDescrip);
+             itmcount = 3;
+         }
         
-//         else if (itmcount==1){
-//             iNum=atoi(holder1.c_str());
-//             (*(productInfo+j)).setItemNo(iNum);
-//             itmcount = 2;
-//         }
+         else if (itmcount==1){
+             iNum=atoi(holder1.c_str());
+             (*(productInfo+j)).setItemNo(iNum);
+             itmcount = 2;
+       }
        
-//     }
-//     }
+    }
+   }
         
-//     bool choice1=false, choice2=false, error1=false; // choice 1 and 2 are used for loop traps while error1 is used for validation of Product ID
-//     int purchaseQTY[count];
+    bool choice1=false, choice2=false, error1=false; // choice 1 and 2 are used for loop traps while error1 is used for validation of Product ID
+    int purchaseQTY[count];
     
-//     for(int i=0; i<count; i++){ // displays all items and details
-//         (*(productInfo+i)).printSummary();
-//     }
+     for(int i=0; i<count; i++){ // displays all items and details
+         (*(productInfo+i)).printSummary();
+   }
     
     
-//     while (choice1==false){ // item selection and quantity selection,to end loop user inputs 0
-//         cout << "Please select the item(s) the customer wishes to purchase (Enter Item # shown above. Enter 0 when finished with order.)" << endl;
-//         cin >> iNumChoice;
-//         int i=0;
-//         while (i<count){
-//             if(iNumChoice==(*(productInfo+i)).getItemNo()){
-//                 bool flag=true;
-//                 (*(productInfo+i)).setBool(flag);
-//                 cout << "Please Enter Purchase Quantity Amount: ";
-//                 cin >> purchaseQTY[i];
-//                 int qty=(*(productInfo+i)).getStockQuantity();
+     while (choice1==false){ // item selection and quantity selection,to end loop user inputs 0
+        cout << "Please select the item(s) the customer wishes to purchase (Enter Item # shown above. Enter 0 when finished with order.)" << endl;
+        cin >> iNumChoice;
+         int i=0;
+         while (i<count){
+             if(iNumChoice==(*(productInfo+i)).getItemNo()){
+                bool flag=true;
+                (*(productInfo+i)).setBool(flag);
+                cout << "Please Enter Purchase Quantity Amount: ";
+                cin >> purchaseQTY[i];
+                 int qty=(*(productInfo+i)).getStockQuantity();
                 
-//                 while((qty<purchaseQTY[i])||(purchaseQTY[i]<0)){//validation for quantity
-//                     cout<< "Invalid Quantity." << endl << "Please Enter A valid Purchase Quantity Amount: ";
-//                 cin >> purchaseQTY[i];
-//                    //VALIDATION FOR BALANCE OVERDRAFT 
-//                 }
-//                 total+= (purchaseQTY[i]*(*(productInfo+i)).getPrice());
-//                 error1=true;
-//             }
-//             else if (iNumChoice==0){
-//                 choice1=true;
-//                 error1=true;
-//             }
-//             i++;
-//         }
-//         if (error1==false){
-//             cout <<"Invalid Product ID" << endl;
-//         }
+                 while((qty<purchaseQTY[i])||(purchaseQTY[i]<0)){//validation for quantity
+                     cout<< "Invalid Quantity." << endl << "Please Enter A valid Purchase Quantity Amount: ";
+                cin >> purchaseQTY[i];
+                  
+    //VALIDATION FOR BALANCE OVERDRAFT 
+               }
+                total= (purchaseQTY[i]*(*(productInfo+i)).getPrice());
+                double creditCheck;
+                creditCheck=(*(custId+findCustInfo(cID))).getlCredit();
+                if (creditCheck<total){
+                    cout << "Not enough credit to purchase item" << endl;
+                    bool flag=false;
+                    (*(productInfo+i)).setBool(flag);
+                }
+                int newStockQTY;
+                newStockQTY = (*(productInfo+i)).getStockQuantity() - qty;
+                (*(productInfo+i)).setStockQuantity(newStockQTY);
+                error1=true;
+            }
+            else if (iNumChoice==0){
+                 choice1=true;
+                error1=true;
+             }
+            i++;
+        }
+        if (error1==false){
+            cout <<"Invalid Product ID" << endl;
+      }
         
-//     }
+     }
     
-//     invFile.close();
-//     invFile.clear(); //closes and clears input file;
+    invFile.close();
+    invFile.clear(); //closes and clears input file;
     
-//          //RECIEPT
-//     cout <<"-------------------------------------------------------------------------" << endl;
-//     cout <<left << "B2B Shopping Cart" << endl;   
-//     cout <<"-------------------------------------------------------------------------" << endl; 
-//     cout <<left <<"Order Number: " << NumOrder <<endl;
-//     cout <<left <<"Associate: " << associate <<endl;
-//     cout <<left <<"Customer Number: "<< custId[custIndex].getcusNum()<<endl;
-//     cout <<left <<"Address: "<< custId <<endl;
+     //RECIEPT
+    cout <<"-------------------------------------------------------------------------" << endl;
+    cout <<left << "B2B Shopping Cart" << endl;   
+    cout <<"-------------------------------------------------------------------------" << endl; 
+    cout <<left <<"Order Number: " << NumOrder <<endl;
+    cout <<left <<"Associate: " << associate <<endl;
+    cout <<left <<"Customer Number: "<< (*(custId+findCustInfo(cID))).getcusNum() << endl;
+    cout <<left <<"Customer: " << (*(custId+findCustInfo(cID))).getcusName() << endl;
+    cout <<left <<"Address: "<< custId <<endl;
  
-//     cout <<setw() << "Item No " << setw() << "Description " << setw() << "Qty" << setw() << "Total" <<endl;
-//     cout <<"-------------------------------------------------------------------------" << endl; 
+    cout <<setw(10) << "Item No " << setw(10) << "Description " << setw(10) << "Qty" << setw(10) << "Total" <<endl;
+    cout <<"-------------------------------------------------------------------------" << endl; 
        
-//     while(choice2==false){ //creates output for final order summary
-//         int i=0;
-//         while(i<count){
-//             int num, qty;
-//             string descr;
-//             double p, pTotal;
-//             if((*(productInfo+i)).getBool()==true){
-//                 num=(*(productInfo+i)).getItemNo();
-//                 desc=(*(productInfo+i)).getDescription();
-//                 p=(*(productInfo+i)).getPrice();
-//                 qty=(*(productInfo+i)).getStockQuantity();
-//                 pTotal=purchaseQTY[i]*p;
-//                 orderSummary << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl; // needs setprecision[2]
-//                 cout << setw() << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl
+    while(choice2==false){ //creates output for final order summary
+       int i=0;
+       while(i<count){
+          int num, qty;
+          string descr;
+          double p, pTotal;
+            if((*(productInfo+i)).getBool()==true){
+                num=(*(productInfo+i)).getItemNo();
+                descr=(*(productInfo+i)).getDescription();
+                p=(*(productInfo+i)).getPrice();
+                qty=(*(productInfo+i)).getStockQuantity();
+                pTotal=purchaseQTY[i]*p;
+                 orderSummary << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl; // needs setprecision[2]
+                 cout << setw(10) << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl;
            
-                
-//              }
-//             i++;
-//         }
-//         choice2=true; 
-//     }
-//     cout <<"-------------------------------------------------------------------------" << endl; 
-//     orderSummary << "$" << total << endl; // prints total
-//     cout <<left << "Total" << setw() << "$" << total << endl;
-//     cout <<"-------------------------------------------------------------------------" << endl; 
-//     cout <<left << "Remaning Credit" << setw() << endl;*/
- }while(custIndex == -1); 	
-    return 0;
+                              }
+            i++;
+         }
+         choice2=true; 
+    }
+     cout <<"-------------------------------------------------------------------------" << endl; 
+     orderSummary << "$" << total << endl; // prints total
+     cout <<left << "Total" << setw(10) << "$" << total << endl;
+     cout <<"-------------------------------------------------------------------------" << endl; 
+     cout <<left << "Remaning Credit" << setw(10) << endl;
+    double newCredit = (*(custId+findCustInfo(cID))).getlCredit() - total;
+    (*(custId+findCustInfo(cID))).setlCredit(newCredit);
+    
+ 	return 0;
 }
