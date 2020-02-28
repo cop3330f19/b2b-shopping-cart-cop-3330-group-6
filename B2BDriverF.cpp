@@ -60,6 +60,7 @@ Product prodId[100];
 vector<int> mAddress;
 //ADDRESS VECTOR
 vector<Address> addVec;
+vector<Product>prodVec;
 
 //GENERATE RANDOM ORDER NUM
 string generateOrderNum(){ //orderSummary << generateOrderNum();
@@ -153,7 +154,7 @@ int main(){
     int custIndex;
     string associate;
     string cID;
-    double total;
+    double total = 0;
     int counts= fileCount;
   
     getCustumerInfo(counts, "customers.dat");
@@ -267,13 +268,13 @@ int main(){
                   
     //VALIDATION FOR BALANCE OVERDRAFT 
                }
-                total= (purchaseQTY[i]*(*(productInfo+i)).getPrice());
+               total+= (purchaseQTY[i]*(*(productInfo+i)).getPrice());
                 double creditCheck;
                 creditCheck=(*(custId+findCustInfo(cID))).getlCredit();
                 if (creditCheck<total){
                     cout << "Not enough credit to purchase item" << endl;
                     bool flag=false;
-                    (*(productInfo+i)).setBool(flag);
+                    (*(productInfo+i)).setBool(flag);;
                 }
                 int newStockQTY;
                 newStockQTY = (*(productInfo+i)).getStockQuantity() - qty;
@@ -294,7 +295,8 @@ int main(){
     
     invFile.close();
     invFile.clear(); //closes and clears input file;
-    
+    Address * ap;
+    ap =(*(custId+findCustInfo(cID))).getCusAddress();
      //RECIEPT
     cout <<"-------------------------------------------------------------------------" << endl;
     cout <<left << "B2B Shopping Cart" << endl;   
@@ -303,9 +305,11 @@ int main(){
     cout <<left <<"Associate: " << associate <<endl;
     cout <<left <<"Customer Number: "<< (*(custId+findCustInfo(cID))).getcusNum() << endl;
     cout <<left <<"Customer: " << (*(custId+findCustInfo(cID))).getcusName() << endl;
-    cout <<left <<"Address: "<< custId <<endl;
+    cout <<left <<"Address: "; 
+    ap->getAddress();
+    cout << endl;
  
-    cout <<setw(10) << "Item No " << setw(10) << "Description " << setw(10) << "Qty" << setw(10) << "Total" <<endl;
+    cout <<setw(20) << "Item No " << setw(20) << "Description " << setw(20) << "Qty" << setw(20) << "Total" <<endl;
     cout <<"-------------------------------------------------------------------------" << endl; 
        
     while(choice2==false){ //creates output for final order summary
@@ -321,20 +325,40 @@ int main(){
                 qty=(*(productInfo+i)).getStockQuantity();
                 pTotal=purchaseQTY[i]*p;
                  orderSummary << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl; // needs setprecision[2]
-                 cout << setw(10) << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl;
-           
-                              }
+                 cout << setw(30) << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal <<endl;
+        
+                   }
             i++;
          }
          choice2=true; 
-    }
+         double newCredit = (*(custId+findCustInfo(cID))).getlCredit() - total;
+    (*(custId+findCustInfo(cID))).setlCredit(newCredit);                     
      cout <<"-------------------------------------------------------------------------" << endl; 
      orderSummary << "$" << total << endl; // prints total
-     cout <<left << "Total" << setw(10) << "$" << total << endl;
+     cout <<left << "Total" << setw(30) << "$" << total << endl;
      cout <<"-------------------------------------------------------------------------" << endl; 
-     cout <<left << "Remaning Credit" << setw(10) << endl;
-    double newCredit = (*(custId+findCustInfo(cID))).getlCredit() - total;
-    (*(custId+findCustInfo(cID))).setlCredit(newCredit);
-    
+     cout <<left << "Remaning Credit" << setw(10) << " " << newCredit << endl;
+    }
+    ofstream custEdit;
+    custEdit.open("customer.dat");
+      for(int q= 0; q< fileCount; q++){
+        ap =(*(custId+q)).getCusAddress();
+        
+        custEdit << custId[q].getcusNum() << "|"
+        << custId[q].getcusName()  << "|"
+        << custId[q].getlCredit() << "|"
+        << ap->getStreetAddress()  << ", "
+        << ap->getCity()  << ", "
+        << ap->getState()  << ", "
+        << ap->getZipCode() << endl;
+    }
+  
+        for(int p= 0; p< fileCount; p++){
+        invFile.open("inventory.dat");
+        invFile << (*(productInfo+p)).getItemNo()  << ","
+         << (*(productInfo+p)).getDescription()  << ","
+         << (*(productInfo+p)).getPrice()  << ","
+         << (*(productInfo+p)).getStockQuantity() << endl;
+    }
  	return 0;
 }
