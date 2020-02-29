@@ -178,14 +178,16 @@ int main(){
     cout <<"Enter Customer ID:" <<endl;
     cin  >> cID;
     custIndex = findCustInfo(cID);
-    if(custIndex == -1){
+    while(custIndex == -1){
         cout << "Invalid Customer Id Number" << endl;
+        cout <<"Enter Customer ID:" <<endl;
+        cin  >> cID;
+        custIndex = findCustInfo(cID);
     }
-    else
-    {
-        orderSummary << "Customer Number:" << (*(custId+findCustInfo(cID))).getcusNum() << endl;
-        orderSummary << "Customer: " << (*(custId+findCustInfo(cID))).getcusName() << endl;
-    }
+    
+    orderSummary << "Customer Number:" << (*(custId+findCustInfo(cID))).getcusNum() << endl;
+    orderSummary << "Customer: " << (*(custId+findCustInfo(cID))).getcusName() << endl;
+    
   
      int iNum, iQTY,count = 0, iNumChoice, j, itmcount;
      double iPrice;
@@ -264,7 +266,7 @@ int main(){
                }
                double itemTotal = (purchaseQTY[i]*(*(productInfo+i)).getPrice());
                total+= itemTotal;
-                double creditCheck;
+               double creditCheck;
                 creditCheck=(*(custId+findCustInfo(cID))).getlCredit();
                 if (creditCheck<total){
                     cout << "Not enough credit to purchase item" << endl;
@@ -321,8 +323,8 @@ int main(){
                 p=(*(productInfo+i)).getPrice();
                 qty=(*(productInfo+i)).getStockQuantity();
                 pTotal=purchaseQTY[i]*p;
-                 orderSummary << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl; // needs setprecision[2]
-                 cout << setw(30) << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal <<endl;
+                 orderSummary<< fixed << setprecision(2) << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl; // needs setprecision[2]
+                 cout << setw(30) << fixed << setprecision(2) << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal <<endl;
         
                    }
             i++;
@@ -332,9 +334,9 @@ int main(){
     (*(custId+findCustInfo(cID))).setlCredit(newCredit);                     
      cout <<"-------------------------------------------------------------------------" << endl; 
      orderSummary << "$" << total << endl; // prints total
-     cout <<left << "Total" << setw(30) << "$" << total << endl;
+     cout <<left << "Total" << setw(30) << fixed << setprecision(2) << "$" << total << endl;
      cout <<"-------------------------------------------------------------------------" << endl; 
-     cout <<left << "Remaning Credit" << setw(10) << " " << newCredit << endl;
+     cout <<left << "Remaning Credit" << setw(10) << fixed << setprecision(2) << " " << newCredit << endl;
     }
     ofstream custEdit;
     custEdit.open("customers.dat");
