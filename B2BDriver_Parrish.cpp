@@ -237,7 +237,6 @@ int main(){
        
     }
    }
-        
     bool choice1=false, choice2=false, error1=false; // choice 1 and 2 are used for loop traps while error1 is used for validation of Product ID
     int purchaseQTY[count];
     
@@ -343,7 +342,7 @@ int main(){
       for(int q= 0; q< fileCount; q++){
         ap =(*(custId+q)).getCusAddress();
         
-        custEdit << custId[q].getcusNum() << "|"
+        custEdit << fixed << setprecision(2) << custId[q].getcusNum() << "|"
         << custId[q].getcusName()  << "|"
         << custId[q].getlCredit() << "|"
         << ap->getStreetAddress()  << ","
@@ -354,13 +353,12 @@ int main(){
             custEdit << endl;
     }
   invFile.open("inventory.dat");
-        for(int p= 0; p< fileCount; p++){
-        invFile << (*(productInfo+p)).getItemNo()  << ","
+        for(int p= 0; p< (fileCount-1); p++){
+        invFile << fixed << setprecision(2) << (*(productInfo+p)).getItemNo()  << ","
          << (*(productInfo+p)).getDescription()  << ","
          << (*(productInfo+p)).getPrice()  << ","
          << (*(productInfo+p)).getStockQuantity();
-         if (p<(fileCount-1))
+         if (p<(fileCount-2))
              invFile << endl;
     }
  	return 0;
-}
