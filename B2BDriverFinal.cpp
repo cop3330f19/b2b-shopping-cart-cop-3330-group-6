@@ -178,14 +178,16 @@ int main(){
     cout <<"Enter Customer ID:" <<endl;
     cin  >> cID;
     custIndex = findCustInfo(cID);
-    if(custIndex == -1){
+    while(custIndex == -1){
         cout << "Invalid Customer Id Number" << endl;
+        cout <<"Enter Customer ID:" <<endl;
+        cin  >> cID;
+        custIndex = findCustInfo(cID);
     }
-    else
-    {
-        orderSummary << "Customer Number:" << (*(custId+findCustInfo(cID))).getcusNum() << endl;
-        orderSummary << "Customer: " << (*(custId+findCustInfo(cID))).getcusName() << endl;
-    }
+    
+    orderSummary << "Customer Number:" << (*(custId+findCustInfo(cID))).getcusNum() << endl;
+    orderSummary << "Customer: " << (*(custId+findCustInfo(cID))).getcusName() << endl;
+    
   
      int iNum, iQTY,count = 0, iNumChoice, j, itmcount;
      double iPrice;
@@ -235,7 +237,6 @@ int main(){
        
     }
    }
-        
     bool choice1=false, choice2=false, error1=false; // choice 1 and 2 are used for loop traps while error1 is used for validation of Product ID
     int purchaseQTY[count];
     
@@ -264,7 +265,7 @@ int main(){
                }
                double itemTotal = (purchaseQTY[i]*(*(productInfo+i)).getPrice());
                total+= itemTotal;
-                double creditCheck;
+               double creditCheck;
                 creditCheck=(*(custId+findCustInfo(cID))).getlCredit();
                 if (creditCheck<total){
                     cout << "Not enough credit to purchase item" << endl;
@@ -306,7 +307,7 @@ int main(){
     ap->getAddress();
     cout << endl;
  
-    cout <<setw(20) << "Item No " << setw(20) << "Description " << setw(20) << "Qty" << setw(20) << "Total" <<endl;
+    cout <<setw(15) << "Item No " << setw(30) << "Description " << setw(20) << "Qty" << setw(20) << "Total" <<endl;
     cout <<"-------------------------------------------------------------------------" << endl; 
        
     while(choice2==false){ //creates output for final order summary
@@ -321,8 +322,8 @@ int main(){
                 p=(*(productInfo+i)).getPrice();
                 qty=(*(productInfo+i)).getStockQuantity();
                 pTotal=purchaseQTY[i]*p;
-                 orderSummary << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl; // needs setprecision[2]
-                 cout << setw(30) << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal <<endl;
+                 orderSummary<< fixed << setprecision(2) << num << " " << descr <<" "<<purchaseQTY[i]<<" $"<< pTotal<<endl; // needs setprecision[2]
+                 cout << setw(15) << fixed << setprecision(2) << num << setw(30) << fixed<< descr <<setw(18) << fixed<<purchaseQTY[i]<<" $"<< pTotal <<endl;
         
                    }
             i++;
@@ -332,16 +333,16 @@ int main(){
     (*(custId+findCustInfo(cID))).setlCredit(newCredit);                     
      cout <<"-------------------------------------------------------------------------" << endl; 
      orderSummary << "$" << total << endl; // prints total
-     cout <<left << "Total" << setw(30) << "$" << total << endl;
+     cout <<left << "Total" << setw(30) << fixed << setprecision(2) << "$" << total << endl;
      cout <<"-------------------------------------------------------------------------" << endl; 
-     cout <<left << "Remaning Credit" << setw(10) << " " << newCredit << endl;
+     cout <<left << "Remaning Credit" << setw(10) << fixed << setprecision(2) << " " << newCredit << endl;
     }
     ofstream custEdit;
     custEdit.open("customers.dat");
       for(int q= 0; q< fileCount; q++){
         ap =(*(custId+q)).getCusAddress();
         
-        custEdit << custId[q].getcusNum() << "|"
+        custEdit << fixed << setprecision(2) << custId[q].getcusNum() << "|"
         << custId[q].getcusName()  << "|"
         << custId[q].getlCredit() << "|"
         << ap->getStreetAddress()  << ","
@@ -352,12 +353,12 @@ int main(){
             custEdit << endl;
     }
   invFile.open("inventory.dat");
-        for(int p= 0; p< fileCount; p++){
-        invFile << (*(productInfo+p)).getItemNo()  << ","
+        for(int p= 0; p< (fileCount-1); p++){
+        invFile << fixed << setprecision(2) << (*(productInfo+p)).getItemNo()  << ","
          << (*(productInfo+p)).getDescription()  << ","
          << (*(productInfo+p)).getPrice()  << ","
          << (*(productInfo+p)).getStockQuantity();
-         if (p<(fileCount-1))
+         if (p<(fileCount-2))
              invFile << endl;
     }
  	return 0;
