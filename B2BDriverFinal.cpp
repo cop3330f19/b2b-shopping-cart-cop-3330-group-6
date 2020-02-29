@@ -10,7 +10,6 @@ Once completed, the system will display a final order summary and update the sto
  */
 
 
-#include <sstream>
 #include <iostream> 
 #include <cstdlib>
 #include <vector>
@@ -28,20 +27,20 @@ using namespace std;
 //ALLOWS PROGRAM TO BE ABLE TO COUNT LINES IN THE FILES 
 int countFileLines(string holder)
 {
-    int count;
+    int count1=0;
     string cust;
     
     fstream inFile;
     inFile.open(holder);
-       while (getline(inFile, cust)); //creates a count of items to create pointer array
-        count++;
-    
-        return count;
+       while (getline(inFile, cust)){//creates a count of items to create pointer array
+        count1++;
+       }
+        return count1;
     inFile.close();
     
     }
 //INCREASE FILE COMPACITY AS IT GROWS
-const int fileCount = countFileLines("customer.dat");
+int fileCount = countFileLines("customers.dat");
 //GLOBAL VARIABLES
 
 //ADDRESS
@@ -131,20 +130,22 @@ void getCustumerInfo(int count, string f){
         
          mAddress.push_back(AddAddress(_streetAddress, _city, _state, _zipCode));
          AddressVectorAssign();
-        break;
    }  
 }
 
 int findCustInfo(string id)
 {
+   int exit;
    for(int i=0; i < fileCount; i++)
    {
        if(custId[i].getcusNum() == id)
        {
           return i;
        }
-       return -1;
+       else
+          exit = -1;
    }
+    return exit;
 }
 
 
@@ -162,13 +163,8 @@ int main(){
     //OPENS UP ORDER SUMMARY
     ofstream orderSummary;
     orderSummary.open("orderSummary.dat"); 
-   
-    
-    cout << "Test 1" << endl;    
-    
-    // cout << "Test 2" << endl;
+       
     orderSummary <<"Order Number: " << generateOrderNum()<<endl;
-    cout << "Test 3" << endl;
     string NumOrder= generateOrderNum();
     
     
@@ -177,13 +173,11 @@ int main(){
     cin >>associate;
     
     
-    //CORPERATE NUM VALIDATION
-    cout << "Test 4" << endl;    
+    //CORPERATE NUM VALIDATION   
 
     cout <<"Enter Customer ID:" <<endl;
-      cin  >> cID;
-      custIndex = findCustInfo(cID);
-   
+    cin  >> cID;
+    custIndex = findCustInfo(cID);
     if(custIndex == -1){
         cout << "Invalid Customer Id Number" << endl;
     }
@@ -268,23 +262,26 @@ int main(){
                   
     //VALIDATION FOR BALANCE OVERDRAFT 
                }
-               total+= (purchaseQTY[i]*(*(productInfo+i)).getPrice());
+               double itemTotal = (purchaseQTY[i]*(*(productInfo+i)).getPrice());
+               total+= itemTotal;
                 double creditCheck;
                 creditCheck=(*(custId+findCustInfo(cID))).getlCredit();
                 if (creditCheck<total){
                     cout << "Not enough credit to purchase item" << endl;
                     bool flag=false;
-                    (*(productInfo+i)).setBool(flag);;
+                    (*(productInfo+i)).setBool(flag);
+                    purchaseQTY[i]=0;
+                    total-=itemTotal;
                 }
                 int newStockQTY;
-                newStockQTY = (*(productInfo+i)).getStockQuantity() - qty;
+                newStockQTY = (*(productInfo+i)).getStockQuantity() - purchaseQTY[i];
                 (*(productInfo+i)).setStockQuantity(newStockQTY);
                 error1=true;
-            }
-            else if (iNumChoice==0){
+              }
+              else if (iNumChoice==0){
                  choice1=true;
-                error1=true;
-             }
+                 error1=true;
+              }
             i++;
         }
         if (error1==false){
@@ -340,25 +337,28 @@ int main(){
      cout <<left << "Remaning Credit" << setw(10) << " " << newCredit << endl;
     }
     ofstream custEdit;
-    custEdit.open("customer.dat");
+    custEdit.open("customers.dat");
       for(int q= 0; q< fileCount; q++){
         ap =(*(custId+q)).getCusAddress();
         
         custEdit << custId[q].getcusNum() << "|"
         << custId[q].getcusName()  << "|"
         << custId[q].getlCredit() << "|"
-        << ap->getStreetAddress()  << ", "
-        << ap->getCity()  << ", "
-        << ap->getState()  << ", "
-        << ap->getZipCode() << endl;
+        << ap->getStreetAddress()  << ","
+        << ap->getCity()  << ","
+        << ap->getState()  << ","
+        << ap->getZipCode();
+        if (q<(fileCount-1))
+            custEdit << endl;
     }
-  
+  invFile.open("inventory.dat");
         for(int p= 0; p< fileCount; p++){
-        invFile.open("inventory.dat");
         invFile << (*(productInfo+p)).getItemNo()  << ","
          << (*(productInfo+p)).getDescription()  << ","
          << (*(productInfo+p)).getPrice()  << ","
-         << (*(productInfo+p)).getStockQuantity() << endl;
+         << (*(productInfo+p)).getStockQuantity();
+         if (p<(fileCount-1))
+             invFile << endl;
     }
  	return 0;
 }
