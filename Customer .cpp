@@ -26,23 +26,23 @@
 
 using namespace std;
 
-Customer::Customer(){               //no arguement constructor
-    cusNum="";
-    cusName="";
-    lCredit=0.0;
+Customer::Customer(){ //no arguement constructor
+    customerNum="";
+    customerName="";
+    lineOfCredit=0.0;
 }
 
-Customer::Customer(string cN,string cNa, double lC){    //constructor
-    setcusNum(x);
-    setcusName(y);                                      //mutator function
-    setlCredit(z);
+Customer::Customer(string cN,string cNa, double lC){ //constructor
+    setcusNum(cN);
+    setcusName(cNa);
+    setlCredit(lC);
 }
-void Customer::setcusNum(string cN){
-    customerNumber=cN;
+void Customer::setcusNum(string cN){ //mutator function
+    customerNum=cN;
 }
 
-string Customer::getcusNum(){                            //accessor function 
-    return cusNum;
+string Customer::getcusNum(){ //accessor function 
+    return customerNum;
 }
 
 void Customer::setcusName(string cNa){
@@ -50,7 +50,7 @@ void Customer::setcusName(string cNa){
 }
 
 string Customer::getcusName(){
-    return cusName;
+    return customerName;
 }
 
 void Customer::setlCredit(double lC){
@@ -58,14 +58,14 @@ void Customer::setlCredit(double lC){
 }
 
 double Customer::getlCredit(){
-    return lCredit;
+    return lineOfCredit;
 }
 
-void Customer::setCusAddress(Address * address){ 
-    corperateAddress = addresss;
+void Customer::setCusAddress(Address * address){
+    corperateAddress = address;
 }
 
-Address * Customer::getCusAddress(){
+Address* Customer::getCusAddress(){
     return corperateAddress;
 }
 
