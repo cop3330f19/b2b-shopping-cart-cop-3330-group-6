@@ -21,21 +21,28 @@
 #include <cmath>
 #include <iomanip>
 
+#include <iostream>
+#include <cstdlib>
+#include <fstream>
+#include <cmath>
+#include <iomanip>
+#include "Address.h"
+
 class Customer{
-    string cusNum;
-    string cusName;
-    double lCredit;
-    Address * corperateAddress;       //pointer to address object
+    std::string customerNum;
+    std::string customerName;
+    double lineOfCredit;
+    Address * corperateAddress;
     
-    public:                         //<-no arguement constructor 
+    public:
     Customer();
-    Customer(string,string,double);
-    void setcusNum(string);
-    string getcusNum();
-    void setcusName(string);
-    string getcusName;
+    Customer(std::string,std::string,double);
+    void setcusNum(std::string);
+    std::string getcusNum();
+    void setcusName(std::string);
+    std::string getcusName();
     void setlCredit(double);
     double getlCredit();
-    Address * getCusAddress();
+    Address* getCusAddress();
     void setCusAddress(Address *);
 };
